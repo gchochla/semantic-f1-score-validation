@@ -1,0 +1,12 @@
+root_dir: /path/to/persuasionforgood
+label_type: persuader_success
+train_splits: train
+dev_splits: dev
+test_splits: test
+instruction_prompt: ./configs/PersuasionForGood/instruction.txt
+incontext_prompt: ./configs/PersuasionForGood/incontext.txt
+system_prompt: ./configs/PersuasionForGood/system.txt
+max_new_tokens: 25
+accelerate: True
+logging_level: debug
+text_preprocessor: False

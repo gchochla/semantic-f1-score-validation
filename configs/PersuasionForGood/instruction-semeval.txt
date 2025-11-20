@@ -1,0 +1,44 @@
+A multi-turn conversation will be presented to you in the following format:
+CONVERSATION:
+```
+[conversation goes here]
+```
+
+Evaluate the last turn only for the expressed emotion of the speaker. This is important; do not take into account the emotions expressed previosuly in your assessment, but only to contextualize the last turn.
+Choose none, one, or multiple of the following emotions: anger, anticipation, disgust, fear, joy, love, optimism, pessimism, sadness, surprise, trust.
+Pick from these emotions only. Pick emotions that are plausible under some intepretation of the stimulus, but the emotions should make sense together as a group.
+The response should strictly follow this format:
+
+EMOTIONS: [list of emotions]
+
+for example `EMOTIONS: anger, sadness`, or `EMOTIONS: optimism, love, joy`.
+
+CONVERSATION:
+```
+Turn 0: Good Evening
+Turn 1: Hello there. how are you?
+Turn 2: I am doing well! How are doing today?
+Turn 3: I am doing pretty well. thanks for asking!
+Turn 4: I''d like to tell you about a great program I am working on!  Have you ever heard of Save the Children?
+Turn 5: I may have in passing, but could you tell me more information about it?
+```
+
+EMOTIONS: anticipation.
+
+CONVERSATION:
+```
+Turn 0: Good morning. How are you doing today?
+Turn 1: Hi. I am doing good. How about you?
+Turn 2: I'm doing pretty good for a Tuesday morning.
+Turn 3: Haha. Same here, but it really feels like a Monday.
+Turn 4: Ugh yes it does!
+Turn 5: I can not believe how warm it is already.
+Turn 6: Where are you from?
+Turn 7: I am from the Midwest. What about you?
+Turn 8: I'm from the South East. It's always warm here.
+Turn 9: Oh, yep. You are definitely in for warm weather, which is great as far as I am concerned.
+Turn 10: We're about to get hit by a tropical storm.
+```
+
+EMOTIONS: anger, fear, pessimism, sadness.
+

@@ -1,0 +1,97 @@
+import traceback
+from legm import splitify_namespace, ExperimentManager
+from legm.argparse_utils import parse_args_and_metadata
+
+from sef1_validation import (
+    PromptDataset,
+    vLMForGeneration,
+    vPromptEvaluator,
+    text_preprocessor,
+    CONSTANT_ARGS,
+    DATASETS,
+)
+from sef1_validation.utils import clean_cuda, reorder_grid_args_by_model
+
+
+class ZeroShotPromptDataset(PromptDataset):
+    @staticmethod
+    def argparse_args():
+        args = PromptDataset.argparse_args()
+        args.pop("shot")
+        return args
+
+
+# make its own function to avoid memory leaks
+def loop(args, metadata):
+    exp_manager = ExperimentManager(
+        "./logs",
+        args.task,
+        logging_level=args.logging_level,
+        description=args.description,
+        alternative_experiment_name=args.alternative_experiment_name,
+    )
+    exp_manager.set_namespace_params(args)
+    exp_manager.set_param_metadata(metadata[args.task], args)
+    exp_manager.start()
+
+    # this is done after exp_manager.set_namespace_params
+    # so as not to log the actual preprocessing function
+    if args.text_preprocessor:
+        args.text_preprocessor = text_preprocessor[
+            DATASETS[args.task].source_domain
+        ]()
+    else:
+        args.text_preprocessor = None
+
+    test_dataset = DATASETS[args.task](
+        init__namespace=splitify_namespace(args, "test"), unlabeled=True
+    )
+    dataset = ZeroShotPromptDataset(
+        train_dataset=None,
+        test_dataset=test_dataset,
+        init__namespace=args,
+        shot=0,
+    )
+
+    model = vLMForGeneration(init__namespace=args)
+
+    evaluator = vPromptEvaluator(
+        model=model, test_dataset=dataset, experiment_manager=exp_manager
+    )
+
+    evaluator.run()
+
+    clean_cuda(model)
+
+
+def main():
+    grid_args, metadata = parse_args_and_metadata(
+        [
+            ZeroShotPromptDataset,
+            vLMForGeneration,
+            vPromptEvaluator,
+            ExperimentManager,
+        ],
+        CONSTANT_ARGS,
+        DATASETS,
+        "task",
+        DATASETS,
+    )
+
+    # check whether multiple models are provided
+    # and order args according to models
+    # so that we don't have to reload model weights too often
+    grid_args = reorder_grid_args_by_model(grid_args)
+
+    for i, args in enumerate(grid_args):
+        try:
+            print(f"\nCurrent setting {i + 1}/{len(grid_args)}: {args}\n")
+            loop(args, metadata)
+        except Exception as e:
+            print("\n\n\nError:", traceback.format_exc())
+            print("\n\n\nContinuing...\n\n\n")
+            clean_cuda()
+
+
+if __name__ == "__main__":
+    main()
