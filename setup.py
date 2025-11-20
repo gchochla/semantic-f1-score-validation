@@ -3,14 +3,12 @@ from setuptools import setup, find_packages
 setup(
     name="sef1-validation",
     description="Validation experiments for Semantic F1 score",
-    author="Georgios Chochlakis",
-    author_email="chochlak@usc.edu",
     packages=find_packages(),
     install_requires=[
         "torch",
         "transformers",
-        "legm @ git+https://github.com/gchochla/legm.git@main",
-        "ember @ git+https://github.com/gchochla/ember.git@main",
+        # "anonymized",
+        # "anonymized",
         "gridparse",
         "langcodes",
         "language_data",
